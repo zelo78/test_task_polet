@@ -6,6 +6,24 @@
 
 - <http://127.0.0.1:8000/admin/> - интерфейс администрирования
 - <http://127.0.0.1:8000/api/> - API интерфейс
+- <http://127.0.0.1:8000/api/token/> - API авторизации
+
+### Авторизация
+
+1. Получение токена
+```shell
+curl \
+  -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"username": "oleg", "password": "12345678"}' \
+  http://127.0.0.1:8000/api/token/
+```
+2. Авторизация с использованием токена
+```shell
+curl \
+  -H "Authorization: Bearer <token>" \
+  http://127.0.0.1:8000/api/users/
+```
 
 ## Использованные библиотеки
 
