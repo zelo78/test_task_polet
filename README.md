@@ -1,8 +1,29 @@
 # Пустой проект на Django и DRF
 
-Универсальный пустой шаблон для создания проектов на Django и Django REST framework.
+Универсальный пустой шаблон для создания проектов на **Django** и **Django REST framework**.
 
-## Реализованные URL
+## Запуск
+
+1. Клонировать проект `git clone`
+2. Создать и активировать виртуальное окружение, установить пакеты:
+```shell
+python3.9 -m venv venv
+source ./venv/bin/activate
+pip install -Ur requirements.txt
+```
+3. Переименовать файл `start.env` в `.env` (Он должен находится в корне проекта, рядом с `README.md`)
+4. Создать и применить миграции, создать суперпользователя:
+```shell
+python project/manage.py makemigrations
+python project/manage.py migrate
+python project/manage.py createsuperuser
+```
+5. Запустить сервер:
+```shell
+python project/manage.py runserver
+```
+
+### Реализованные URL
 
 - <http://127.0.0.1:8000/admin/> - интерфейс администрирования
 - <http://127.0.0.1:8000/api/> - API интерфейс

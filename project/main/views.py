@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.contrib.auth.models import User
 from rest_framework import viewsets
 from rest_framework import permissions
-from project.main.serializers import UserSerializer
+from main.serializers import UserSerializer
 
 
 class UserViewSet(viewsets.ModelViewSet):
