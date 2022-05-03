@@ -1,10 +1,13 @@
-# Пустой проект на Django и DRF
+# Шаблон проекта на Django и Django REST framework
 
 Универсальный пустой шаблон для создания проектов на **Django** и **Django REST framework**.
 
 ## Запуск
 
-1. Клонировать проект `git clone`
+1. Клонировать проект в пустую папку:
+```shell
+git clone https://github.com/zelo78/DRF-project-template.git .
+```
 2. Создать и активировать виртуальное окружение, установить пакеты:
 ```shell
 python3.9 -m venv venv
