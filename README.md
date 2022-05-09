@@ -2,31 +2,40 @@
 
 Универсальный пустой шаблон для создания проектов на **Django** и **Django REST framework**.
 
-## Запуск
+## Установка
 
 1. Клонировать проект в пустую папку:
 ```shell
 git clone https://github.com/zelo78/DRF-project-template.git .
 ```
+
 2. Создать и активировать виртуальное окружение, установить пакеты:
 ```shell
 python3.9 -m venv venv
 source ./venv/bin/activate
 pip install -Ur requirements.txt
 ```
-3. Переименовать файл `start.env` в `.env` (Он должен находится в корне проекта, рядом с `README.md`)
+
+3. Копировать файл `start.env` как `.env` (Он должен находится в корне проекта, рядом с `README.md`)
+```shell
+cp start.env .env
+```
+
 4. Создать и применить миграции, создать суперпользователя:
 ```shell
 python project/manage.py makemigrations
 python project/manage.py migrate
-python project/manage.py createsuperuser
+python project/manage.py createsuperuser --username USER
 ```
-5. Запустить сервер:
+
+## Запуск
+
+Запустить сервер:
 ```shell
 python project/manage.py runserver
 ```
 
-### Реализованные URL
+## Реализованные URL
 
 - <http://127.0.0.1:8000/admin/> - интерфейс администрирования
 - <http://127.0.0.1:8000/api/> - API интерфейс
@@ -46,9 +55,10 @@ python project/manage.py runserver
 curl \
   -X POST \
   -H "Content-Type: application/json" \
-  -d '{"username": "oleg", "password": "12345678"}' \
+  -d '{"username": "USER", "password": "PASSWORD"}' \
   http://127.0.0.1:8000/api/token/
 ```
+
 2. Авторизация с использованием токена
 ```shell
 curl \
