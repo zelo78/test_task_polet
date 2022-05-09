@@ -50,7 +50,18 @@ python project/manage.py runserver
 
 ### Авторизация
 
-1. Получение токена
+#### Авторизация с помощью *BasicAuthentication* 
+```shell
+curl \
+  -X GET \
+  -H "Content-Type: application/json" \
+  -u USER:PASSWORD \
+  http://127.0.0.1:8000/api/users/
+```
+
+#### Авторизация с помощью *JWT*
+
+- создаём токен авторизации
 ```shell
 curl \
   -X POST \
@@ -59,10 +70,14 @@ curl \
   http://127.0.0.1:8000/api/token/
 ```
 
-2. Авторизация с использованием токена
+Получаем ответ вида
+> {"refresh":"ey...I0","access":"ey...lQ"}
+
+- авторизуемся с помощью токена:
 ```shell
 curl \
-  -H "Authorization: Bearer <token>" \
+  -X GET \
+  -H "Authorization: Bearer ey...lQ" \
   http://127.0.0.1:8000/api/users/
 ```
 
