@@ -28,7 +28,8 @@ from drf_yasg import openapi
 from main import views
 
 router = routers.DefaultRouter()
-router.register(r"users", views.UserViewSet)
+# router.register(r"users", views.UserViewSet)
+router.register(r"vehicle", views.VehicleViewSet)
 
 urlpatterns = [
     path("api/", include(router.urls)),
