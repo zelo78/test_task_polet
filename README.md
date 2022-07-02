@@ -33,6 +33,10 @@
 
 `GET /api/vehicle/?brand=infiniti&model=fx`
 
+- Получение списка как CSV файла
+
+`GET /api/vehicle/?download=csv`
+
 - Получение данных о конкретном ТС
 
 `GET /api/vehicle/1/`
