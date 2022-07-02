@@ -25,6 +25,8 @@
 
 ## Решение
 
+Решение тестового задания компании [Такси Полёт](https://www.taxipolet.ru/) с использованием **Django**, **Django REST framework**, **PostgreSQL**, **Docker**, **Docker-compose**.
+
 ### Установка
 
 1. Клонировать проект в пустую папку:
@@ -32,37 +34,36 @@
 git clone https://github.com/zelo78/test_task_polet.git .
 ```
 
-2. Создать и активировать виртуальное окружение, установить пакеты:
-```shell
-python3.10 -m venv venv
-source ./venv/bin/activate
-pip install -Ur requirements.txt
-```
-
-3. Копировать файл `start.env` как `.env` (Он должен находится в корне проекта, рядом с `README.md`)
+2. Копировать файл `start.env` как `.env` (Он должен находится в корне проекта, рядом с `README.md`)
 ```shell
 cp start.env .env
 ```
 
-4. Создать и применить миграции, создать суперпользователя:
+3. Создать и запустить контейнер (при запуске контейнера будут созданы и применены миграции):
 ```shell
-python project/manage.py makemigrations
-python project/manage.py migrate
-python project/manage.py createsuperuser --username USER
+docker-compose up -d --build
 ```
 
-5. Можно наполнить БД сгенерированными данными для тестирования
+4. Создать суперпользователя:
 ```shell
-python project/manage.py populatebase
+docker exec -it p_app python manage.py createsuperuser --username USER
+```
+
+5. В целях тестирования, базу данных можно наполнить сгенерированными данными (транспортные средства)
+```shell
+docker exec -it p_app python manage.py populatebase
+```
+
+6. Остановить контейнер
+```shell
+docker-compose down
 ```
 
 ### Запуск
 
-Запустить сервер:
 ```shell
-python project/manage.py runserver
-```
-
+docker-compose up
+``` 
 
 ### Аутентификация
 
@@ -163,7 +164,7 @@ curl \
   http://127.0.0.1:8000/api/vehicle/?download=csv
 ```
 
-Фильтрация, выгрузка как `XLSX` и сохранение в файл
+Комбинация параметров: фильтрация и выгрузка как `XLSX` с сохранением в файл
 ```shell
 curl \
   -X GET \
@@ -244,6 +245,15 @@ curl \
   -F 'file=@/home/oleg/vehicles_list.csv' \
   "http://127.0.0.1:8000/api/vehicle/from_csv/" 
 ```
+
+- [x] `POST /api/vehicle/from_xlsx/`
+  - создание записи о ТС из файла в формате `XLSX`
+  - только для авторизованных пользователей
+
+Ожидает файл, первая строка которого - заголовки колонок, среди них есть колонки со всеми полями модели ТС (то есть "brand", "model", "color", "registration_number", "year_of_manufacture", "vin", "vehicle_registration_number", "vehicle_registration_date"). 
+Подойдёт файл, аналогичный полученному в методе `GET /api/vehicle/?download=xlsx`
+
+Возвращает созданные записи о ТС, а также ошибочные данные с указанием причин ошибки.
 
 - [x] `PATCH /api/vehicle/1/`
   - изменение записи о ТС
