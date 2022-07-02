@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import RegexValidator
 
 
 class Vehicle(models.Model):
@@ -23,6 +24,12 @@ class Vehicle(models.Model):
         max_length=17,
         unique=True,
         help_text="Идентификационный номер транспортного средства",
+        validators=[
+            RegexValidator(
+                regex="^[0-9A-HJ-NPR-Z]{17}$",
+                message="VIN должен иметь 17 символов, допустимы цифры и большие латинские буквы, кроме I, O, Q",
+            )
+        ],
     )
     vehicle_registration_number = models.CharField(
         "номер СТС", max_length=20, help_text="Номер СТС (свидетельства о регистрации)"
@@ -30,3 +37,6 @@ class Vehicle(models.Model):
     vehicle_registration_date = models.DateField(
         "дата СТС", help_text="Дата СТС (свидетельства о регистрации)"
     )
+
+    def __str__(self):
+        return f"{self.brand} {self.model} ({self.year_of_manufacture})"
