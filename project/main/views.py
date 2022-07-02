@@ -31,6 +31,8 @@ class VehicleViewSet(viewsets.ModelViewSet):
         return super().list(request, *args, **kwargs)
 
     def download_csv(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())  # as in super().list()
+
         response = HttpResponse(
             headers={
                 "Content-Type": "text/csv",
@@ -40,21 +42,21 @@ class VehicleViewSet(viewsets.ModelViewSet):
         fieldnames = [field.name for field in Vehicle._meta.get_fields()]
         writer = csv.DictWriter(response, fieldnames=fieldnames)
         writer.writeheader()
-        values = self.filter_queryset(self.get_queryset()).values()
-        for row in values:
+        for row in queryset.values():
             writer.writerow(row)
 
         return response
 
     def download_xlsx(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())  # as in super().list()
+
         wb = Workbook()
         ws = wb.active
         ws.title = "Vehicles"
 
         fieldnames = [field.name for field in Vehicle._meta.get_fields()]
         ws.append(fieldnames)
-        values = self.filter_queryset(self.get_queryset()).values()
-        for row in values:
+        for row in queryset.values():
             ws.append(list(row.values()))
 
         with NamedTemporaryFile() as tmp:

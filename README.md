@@ -25,40 +25,6 @@
 
 ## Решение
 
-- Получение списка ТС
-
-`GET /api/vehicle` 
-
-- Фильтрация (по производителю, по марке)
-
-`GET /api/vehicle/?brand=infiniti&model=fx`
-
-- Получение списка ТС как `CSV` файла
-
-`GET /api/vehicle/?download=csv`
-
-- Получение списка ТС как Excel `XLSX` файла
-
-`GET /api/vehicle/?download=xlsx`
-
-- Получение данных о конкретном ТС
-
-`GET /api/vehicle/1/`
-
-- Создание ТС
-
-`POST /api/vehicle/`
-
-- Редактирование ТС
-
-`PATCH /api/vehicle/1/`
-
-- Удаление ТС
-
-`DELETE /api/vehicle/1/`
-
-
-
 Универсальный пустой шаблон для создания проектов на **Django** и **Django REST framework**.
 
 ## Установка
@@ -94,22 +60,10 @@ python project/manage.py createsuperuser --username USER
 python project/manage.py runserver
 ```
 
-## Реализованные URL
 
-- <http://127.0.0.1:8000/admin/> - интерфейс администрирования
-- <http://127.0.0.1:8000/api/> - API интерфейс
-- <http://127.0.0.1:8000/api/token/> - API авторизации
+### Аутентификация
 
-### Swagger/OpenAPI 2.0 specifications
-
-Доступны при установке `DEBUG = True`
-
-- <http://127.0.0.1:8000/swagger/> - A swagger-ui view of your API specification 
-- <http://127.0.0.1:8000/swagger.json> - A JSON view of your API specification 
-- <http://127.0.0.1:8000/swagger.yaml> - A YAML view of your API specification
-- <http://127.0.0.1:8000/redoc/> - A ReDoc view of your API specification 
-
-### Авторизация
+Реализована `BasicAuthentication` (для работы с Browsable API) и `JWTAuthentication`
 
 #### Авторизация с помощью *BasicAuthentication* 
 ```shell
@@ -142,12 +96,225 @@ curl \
   http://127.0.0.1:8000/api/users/
 ```
 
+### Создание / редактирование / поиск записей ТС (транспортных средств)
+
+- [x] `GET /api/vehicle/`
+  - получение списка ТС (с пагинацией)
+  - только для авторизованных пользователей
+  - для облегчения поиска, возможна фильтрация по марке и модели ТС
+  - реализована выгрузка списка ТС в формате `CSV` или `XLSX`
+
+Получаем список записей вида
+
+    {
+      "count": 25,
+      "next": "http://127.0.0.1:8000/api/vehicle/?page=2",
+      "previous": null,
+      "results": [
+        {
+          "url": "http://127.0.0.1:8000/api/vehicle/1/",
+          "brand": "INFINITI",
+          "model": "FX",
+          "color": "Темно-голубой",
+          "registration_number": "000D592 29",
+          "year_of_manufacture": 2010,
+          "vin": "U89KNNFJAZL2ZCDF7",
+          "vehicle_registration_number": "7995333635",
+          "vehicle_registration_date": "2014-06-17"
+        },
+        {
+          "url": "http://127.0.0.1:8000/api/vehicle/2/",
+          "brand": "Toyota",
+          "model": "Tacoma Access Cab",
+          "color": "Оранжево-красный",
+          "registration_number": "Х013AО 173",
+          "year_of_manufacture": 2010,
+          "vin": "SDJ4JTUPDPCZFL6VL",
+          "vehicle_registration_number": "1317598895",
+          "vehicle_registration_date": "2015-12-18"
+        }
+     ]
+    }
+
+Примеры:
+```shell
+curl \
+  -X GET \
+  -u USER:PASSWORD \
+  http://127.0.0.1:8000/api/vehicle/
+```
+
+С фильтрацией (возможна фильтрация по `brand` и `model`)
+```shell
+curl \
+  -X GET \
+  -u USER:PASSWORD \
+  http://127.0.0.1:8000/api/vehicle/?brand=infiniti
+```
+
+Выгрузка как `CSV` (также возможна как `XLSX`)
+```shell
+curl \
+  -X GET \
+  -u USER:PASSWORD \
+  http://127.0.0.1:8000/api/vehicle/?download=csv
+```
+
+Фильтрация, выгрузка как `XLSX` и сохранение в файл
+```shell
+curl \
+  -X GET \
+  -u USER:PASSWORD \
+  'http://127.0.0.1:8000/api/vehicle/?download=xlsx&brand=infiniti' \
+  --output vehicle_list.xlsx
+```
+
+- [x] `GET /api/vehicle/1/`
+  - получение данных о ТС
+  - только для авторизованных пользователей
+
+Получаем запись вида
+
+    {
+      "url": "http://127.0.0.1:8000/api/vehicle/1/",
+      "brand": "INFINITI",
+      "model": "FX",
+      "color": "Темно-голубой",
+      "registration_number": "000D592 29",
+      "year_of_manufacture": 2010,
+      "vin": "U89KNNFJAZL2ZCDF7",
+      "vehicle_registration_number": "7995333635",
+      "vehicle_registration_date": "2014-06-17"
+    }
+
+Пример:
+```shell
+curl \
+  -X GET \
+  -u USER:PASSWORD \
+  http://127.0.0.1:8000/api/vehicle/1/
+```
+
+- [x] `POST /api/vehicle/`
+  - создание записи о ТС
+  - только для авторизованных пользователей
+
+Ожидает данные вида
+
+    {
+      "brand": "INFINITI",
+      "model": "FX",
+      "color": "Темно-голубой",
+      "registration_number": "000D592 29",
+      "year_of_manufacture": 2010,
+      "vin": "U89KNNFJAZL2ZCDF7",
+      "vehicle_registration_number": "7995333635",
+      "vehicle_registration_date": "2014-06-17"
+    }
+
+Возвращает данные вновь созданной записи о ТС (как в GET detail)
+
+Пример:
+```shell
+curl \
+  -X POST \
+  -u USER:PASSWORD \
+  -H "Content-Type: application/json" \
+  http://127.0.0.1:8000/api/vehicle/ \
+  --data-raw '{"brand":"INFINITI","model":"FX","color":"Темно-голубой","registration_number":"000D592 29","year_of_manufacture":2010,"vin":"U89KNNFJAZL2ZCD13","vehicle_registration_number":"7995333635","vehicle_registration_date":"2014-06-17"}'
+```
+
+- [x] `PATCH /api/vehicle/1/`
+  - изменение записи о ТС
+  - только для авторизованных пользователей
+
+Ожидает частичные данные вида 
+
+    {
+      "brand": "INFINITI",
+      "model": "FX",
+      "color": "Темно-голубой",
+      "registration_number": "000D592 29",
+      "year_of_manufacture": 2010,
+      "vin": "U89KNNFJAZL2ZCDF7",
+      "vehicle_registration_number": "7995333635",
+      "vehicle_registration_date": "2014-06-17"
+    }
+
+Возвращает данные изменённой записи о ТС (как в GET detail)
+
+Пример:
+```shell
+curl \
+  -X PATCH \
+  -u USER:PASSWORD \
+  -H "Content-Type: application/json" \
+  http://127.0.0.1:8000/api/vehicle/1/ \
+  --data-raw '{"color":"Фиолетовый"}'
+```
+
+### Методы API
+
+`GET /api/vehicle` 
+
+- Фильтрация (по производителю, по марке)
+
+`GET /api/vehicle/?brand=infiniti&model=fx`
+
+- Получение списка ТС как `CSV` файла
+
+`GET /api/vehicle/?download=csv`
+
+- Получение списка ТС как Excel `XLSX` файла
+
+`GET /api/vehicle/?download=xlsx`
+
+- Получение данных о конкретном ТС
+
+`GET /api/vehicle/1/`
+
+- Создание ТС
+
+`POST /api/vehicle/`
+
+- Редактирование ТС
+
+`PATCH /api/vehicle/1/`
+
+- Удаление ТС
+
+`DELETE /api/vehicle/1/`
+
+### Дополнительные URL
+
+#### Интерфейс администрирования
+
+<http://127.0.0.1:8000/admin/>
+
+#### Browsable API
+
+<http://127.0.0.1:8000/api/>
+
+#### Swagger/OpenAPI 2.0 specifications
+
+Доступны при установке `DEBUG = True`
+
+- <http://127.0.0.1:8000/swagger/> - A swagger-ui view of your API specification 
+- <http://127.0.0.1:8000/swagger.json> - A JSON view of your API specification 
+- <http://127.0.0.1:8000/swagger.yaml> - A YAML view of your API specification
+- <http://127.0.0.1:8000/redoc/> - A ReDoc view of your API specification 
+
 ## Использованные библиотеки
 
-- [Django](https://www.djangoproject.com/) v. 4.0.4
+- [Django](https://www.djangoproject.com/) v. 4.0.5
 - [Django REST framework](https://www.django-rest-framework.org/) v. 3.13.1
+- [Django-filter](https://django-filter.readthedocs.io/en/stable/index.html) v 22.1 - Django-filter allows users to filter down a queryset based on a model’s fields 
 - [drf-yasg](https://drf-yasg.readthedocs.io/en/stable/) v. 1.20.0 - Yet another Swagger generator. Generate real Swagger/OpenAPI 2.0 specifications from a Django Rest Framework API
 - [Simple JWT](https://django-rest-framework-simplejwt.readthedocs.io/en/latest/) v. 5.1.0 - Simple JWT provides a JSON Web Token authentication backend for the Django REST Framework
 - [python-dotenv](https://pypi.org/project/python-dotenv/) v. 0.20.0 - Reads key-value pairs from a `.env` file and can set them as environment variables
 - [black](https://black.readthedocs.io/en/stable/) v. 22.3.0 - The uncompromising code formatter
+- [openpyxl](https://openpyxl.readthedocs.io/en/stable/) v. 3.0.10 - A Python library to read/write Excel 2010 xlsx/xlsm files
+- [factory_boy](https://factoryboy.readthedocs.io/en/stable/index.html) v. 3.2.1 - factory_boy is a fixtures replacement based on thoughtbot’s factory_bot.
+- [faker_vehicle](https://pypi.org/project/faker-vehicle/) v. 0.2.0 - faker_vehicle provides vehicle and machinery related fake data for testing purposes
+- [flake8](https://flake8.pycqa.org/en/latest/) v. 4.0.1 - Tool For Style Guide Enforcement
  
