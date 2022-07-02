@@ -231,7 +231,7 @@ curl \
   - создание записи о ТС из файла в формате `CSV`
   - только для авторизованных пользователей
 
-Ожидает файл, первая строка которого - заголовки колонок, среди них есть колонки со всеми полями модели ТС (то есть "brand", "model", "color", "registration_number", "year_of_manufacture", "vin", "vehicle_registration_number", "vehicle_registration_date")
+Ожидает файл, первая строка которого - заголовки колонок, среди них есть колонки со всеми полями модели ТС (то есть "brand", "model", "color", "registration_number", "year_of_manufacture", "vin", "vehicle_registration_number", "vehicle_registration_date"). 
 Подойдёт файл, аналогичный полученному в методе `GET /api/vehicle/?download=csv`
 
 Возвращает созданные записи о ТС, а также ошибочные данные с указанием причин ошибки.
@@ -301,6 +301,14 @@ curl \
 - Создание ТС
 
 `POST /api/vehicle/`
+
+- Создание ТС из `CSV` файла
+
+`POST /api/vehicle/from_csv/`
+
+- Создание ТС из `XLSX` файла
+
+`POST /api/vehicle/from_xlsx/`
 
 - Редактирование ТС
 

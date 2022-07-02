@@ -1,7 +1,7 @@
 import csv
 from tempfile import NamedTemporaryFile
 
-from openpyxl import Workbook
+from openpyxl import Workbook, load_workbook
 from django.http import HttpResponse
 from rest_framework import viewsets
 from rest_framework import permissions
@@ -89,6 +89,41 @@ class VehicleViewSet(viewsets.ModelViewSet):
         good = []  # list of created Vehicles
         bad = []  # list of bad data
         for data in reader:
+            serializer = VehicleSerializer(data=data, context={"request": request})
+            res = serializer.is_valid()
+            if res:
+                vehicle = serializer.save()
+                good.append(vehicle)
+            else:
+                bad.append({"data": data, "errors": serializer.errors})
+        return_data = {
+            "created": VehicleSerializer(
+                good, many=True, context={"request": request}
+            ).data,
+            "bad_data": bad,
+        }
+
+        return Response(return_data, status=status.HTTP_201_CREATED)
+
+    @action(detail=False, methods=["post"])
+    def from_xlsx(self, request):
+        file = request.data.get("file")
+        if file is None:
+            raise exceptions.ParseError("Файл не был получен")
+        with NamedTemporaryFile(suffix=".xlsx") as tmp:
+            tmp.write(file.read())
+            tmp.seek(0)
+            wb = load_workbook(tmp.name)
+        ws = wb.active
+        fieldnames = [cell.value for cell in ws["1:1"]]
+        good = []  # list of created Vehicles
+        bad = []  # list of bad data
+        for row in ws.iter_rows(min_row=2):
+            row_data = [cell.value for cell in row]
+            data = dict(zip(fieldnames, row_data))
+            vehicle_registration_date = data.get("vehicle_registration_date")
+            if vehicle_registration_date:
+                data["vehicle_registration_date"] = vehicle_registration_date.date()
             serializer = VehicleSerializer(data=data, context={"request": request})
             res = serializer.is_valid()
             if res:
