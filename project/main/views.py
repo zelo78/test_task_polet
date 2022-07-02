@@ -3,6 +3,7 @@ from rest_framework import permissions
 
 from main.serializers import VehicleSerializer
 from main.models import Vehicle
+from main.filters import VehicleFilter
 
 
 class VehicleViewSet(viewsets.ModelViewSet):
@@ -13,3 +14,4 @@ class VehicleViewSet(viewsets.ModelViewSet):
     queryset = Vehicle.objects.all()
     serializer_class = VehicleSerializer
     permission_classes = [permissions.IsAuthenticated]
+    filterset_class = VehicleFilter
