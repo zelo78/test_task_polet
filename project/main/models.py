@@ -5,6 +5,7 @@ class Vehicle(models.Model):
     class Meta:
         verbose_name = "транспортное средство"
         verbose_name_plural = "транспортные средства"
+        ordering = ["vehicle_registration_date"]
 
     brand = models.CharField("марка", max_length=64, help_text="Марка автомобиля")
     model = models.CharField("модель", max_length=128, help_text="Модель автомобиля")
