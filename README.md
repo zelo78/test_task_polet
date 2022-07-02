@@ -227,6 +227,24 @@ curl \
   --data-raw '{"brand":"INFINITI","model":"FX","color":"Темно-голубой","registration_number":"000D592 29","year_of_manufacture":2010,"vin":"U89KNNFJAZL2ZCD13","vehicle_registration_number":"7995333635","vehicle_registration_date":"2014-06-17"}'
 ```
 
+- [x] `POST /api/vehicle/from_csv/`
+  - создание записи о ТС из файла в формате `CSV`
+  - только для авторизованных пользователей
+
+Ожидает файл, первая строка которого - заголовки колонок, среди них есть колонки со всеми полями модели ТС (то есть "brand", "model", "color", "registration_number", "year_of_manufacture", "vin", "vehicle_registration_number", "vehicle_registration_date")
+Подойдёт файл, аналогичный полученному в методе `GET /api/vehicle/?download=csv`
+
+Возвращает созданные записи о ТС, а также ошибочные данные с указанием причин ошибки.
+
+Пример:
+```shell
+curl \
+  -X POST \
+  -u USER:PASSWORD \
+  -F 'file=@/home/oleg/vehicles_list.csv' \
+  "http://127.0.0.1:8000/api/vehicle/from_csv/" 
+```
+
 - [x] `PATCH /api/vehicle/1/`
   - изменение записи о ТС
   - только для авторизованных пользователей
