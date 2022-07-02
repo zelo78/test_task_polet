@@ -1,6 +1,7 @@
 import csv
-import io
+from tempfile import NamedTemporaryFile
 
+from openpyxl import Workbook
 from django.http import HttpResponse
 from rest_framework import viewsets
 from rest_framework import permissions
@@ -24,6 +25,8 @@ class VehicleViewSet(viewsets.ModelViewSet):
         download_query = request.query_params.get("download")
         if download_query == "csv":
             return self.download_csv(request, *args, **kwargs)
+        if download_query == "xlsx":
+            return self.download_xlsx(request, *args, **kwargs)
 
         return super().list(request, *args, **kwargs)
 
@@ -41,4 +44,29 @@ class VehicleViewSet(viewsets.ModelViewSet):
         for row in values:
             writer.writerow(row)
 
+        return response
+
+    def download_xlsx(self, request, *args, **kwargs):
+        wb = Workbook()
+        ws = wb.active
+        ws.title = "Vehicles"
+
+        fieldnames = [field.name for field in Vehicle._meta.get_fields()]
+        ws.append(fieldnames)
+        values = self.filter_queryset(self.get_queryset()).values()
+        for row in values:
+            ws.append(list(row.values()))
+
+        with NamedTemporaryFile() as tmp:
+            wb.save(tmp.name)
+            tmp.seek(0)
+            stream = tmp.read()
+
+        response = HttpResponse(
+            stream,
+            headers={
+                "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                "Content-Disposition": 'attachment; filename="vehicles_list.xlsx"',
+            },
+        )
         return response
