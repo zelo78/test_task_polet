@@ -51,7 +51,7 @@ docker exec -it p_app python manage.py createsuperuser --username USER
 
 5. В целях тестирования, базу данных можно наполнить сгенерированными данными (транспортные средства)
 ```shell
-docker exec -it p_app python manage.py populatebase
+docker exec -it p_app python manage.py populatebase 40
 ```
 
 6. Остановить контейнер
