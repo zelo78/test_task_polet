@@ -25,18 +25,16 @@
 
 ## Решение
 
-Универсальный пустой шаблон для создания проектов на **Django** и **Django REST framework**.
-
-## Установка
+### Установка
 
 1. Клонировать проект в пустую папку:
 ```shell
-git clone https://github.com/zelo78/DRF-project-template.git .
+git clone https://github.com/zelo78/test_task_polet.git .
 ```
 
 2. Создать и активировать виртуальное окружение, установить пакеты:
 ```shell
-python3.9 -m venv venv
+python3.10 -m venv venv
 source ./venv/bin/activate
 pip install -Ur requirements.txt
 ```
@@ -53,7 +51,12 @@ python project/manage.py migrate
 python project/manage.py createsuperuser --username USER
 ```
 
-## Запуск
+5. Можно наполнить БД сгенерированными данными для тестирования
+```shell
+python project/manage.py populatebase
+```
+
+### Запуск
 
 Запустить сервер:
 ```shell
@@ -243,17 +246,21 @@ curl \
 
 Возвращает данные изменённой записи о ТС (как в GET detail)
 
+- [x] `DELETE /api/vehicle/1/`
+  - удаление записи о ТС
+  - только для авторизованных пользователей
+
 Пример:
 ```shell
 curl \
-  -X PATCH \
+  -X DELETE \
   -u USER:PASSWORD \
-  -H "Content-Type: application/json" \
-  http://127.0.0.1:8000/api/vehicle/1/ \
-  --data-raw '{"color":"Фиолетовый"}'
+  http://127.0.0.1:8000/api/vehicle/7/
 ```
 
 ### Методы API
+
+- Получение списка ТС
 
 `GET /api/vehicle` 
 
