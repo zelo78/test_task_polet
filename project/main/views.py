@@ -5,6 +5,11 @@ from openpyxl import Workbook
 from django.http import HttpResponse
 from rest_framework import viewsets
 from rest_framework import permissions
+from rest_framework import exceptions
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.parsers import MultiPartParser, FileUploadParser
+from rest_framework.decorators import action
 
 from main.serializers import VehicleSerializer
 from main.models import Vehicle
@@ -20,6 +25,7 @@ class VehicleViewSet(viewsets.ModelViewSet):
     serializer_class = VehicleSerializer
     permission_classes = [permissions.IsAuthenticated]
     filterset_class = VehicleFilter
+    parser_classes = [MultiPartParser, FileUploadParser]
 
     def list(self, request, *args, **kwargs):
         download_query = request.query_params.get("download")
@@ -72,3 +78,29 @@ class VehicleViewSet(viewsets.ModelViewSet):
             },
         )
         return response
+
+    @action(detail=False, methods=["post"])
+    def from_csv(self, request):
+        file = request.data.get("file")
+        if file is None:
+            raise exceptions.ParseError("Файл не был получен")
+        rows = [row.decode() for row in file]
+        reader = csv.DictReader(rows)
+        good = []  # list of created Vehicles
+        bad = []  # list of bad data
+        for data in reader:
+            serializer = VehicleSerializer(data=data, context={"request": request})
+            res = serializer.is_valid()
+            if res:
+                vehicle = serializer.save()
+                good.append(vehicle)
+            else:
+                bad.append({"data": data, "errors": serializer.errors})
+        return_data = {
+            "created": VehicleSerializer(
+                good, many=True, context={"request": request}
+            ).data,
+            "bad_data": bad,
+        }
+
+        return Response(return_data, status=status.HTTP_201_CREATED)
