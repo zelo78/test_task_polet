@@ -25,7 +25,7 @@
 
 ## Решение
 
-- Получение списка
+- Получение списка ТС
 
 `GET /api/vehicle` 
 
@@ -33,9 +33,13 @@
 
 `GET /api/vehicle/?brand=infiniti&model=fx`
 
-- Получение списка как CSV файла
+- Получение списка ТС как `CSV` файла
 
 `GET /api/vehicle/?download=csv`
+
+- Получение списка ТС как Excel `XLSX` файла
+
+`GET /api/vehicle/?download=xlsx`
 
 - Получение данных о конкретном ТС
 
