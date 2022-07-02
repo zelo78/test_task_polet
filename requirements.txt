@@ -1,7 +1,12 @@
 django
 djangorestframework
 djangorestframework-simplejwt
+django-filter
+# psycopg2-binary
 drf-yasg
 python-dotenv
 black
 openpyxl
+factory_boy
+flake8
+faker_vehicle
