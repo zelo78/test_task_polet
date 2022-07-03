@@ -1,5 +1,6 @@
 import csv
 from tempfile import NamedTemporaryFile
+import datetime
 
 from openpyxl import Workbook, load_workbook
 from django.http import HttpResponse
@@ -115,15 +116,18 @@ class VehicleViewSet(viewsets.ModelViewSet):
             tmp.seek(0)
             wb = load_workbook(tmp.name)
         ws = wb.active
-        fieldnames = [cell.value for cell in ws["1:1"]]
+        fieldnames = [str(cell.value) for cell in ws["1:1"]]
         good = []  # list of created Vehicles
         bad = []  # list of bad data
         for row in ws.iter_rows(min_row=2):
-            row_data = [cell.value for cell in row]
-            data = dict(zip(fieldnames, row_data))
-            vehicle_registration_date = data.get("vehicle_registration_date")
-            if vehicle_registration_date:
-                data["vehicle_registration_date"] = vehicle_registration_date.date()
+            data = {}
+            for fieldname, cell in zip(fieldnames, row):
+                if fieldname == "vehicle_registration_date" and isinstance(
+                    cell.value, datetime.datetime
+                ):
+                    data[fieldname] = cell.value.strftime("%Y-%m-%d")
+                else:
+                    data[fieldname] = cell.value
             serializer = VehicleSerializer(data=data, context={"request": request})
             res = serializer.is_valid()
             if res:
