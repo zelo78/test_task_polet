@@ -250,10 +250,19 @@ curl \
   - создание записи о ТС из файла в формате `XLSX`
   - только для авторизованных пользователей
 
-Ожидает файл, первая строка которого - заголовки колонок, среди них есть колонки со всеми полями модели ТС (то есть "brand", "model", "color", "registration_number", "year_of_manufacture", "vin", "vehicle_registration_number", "vehicle_registration_date"). 
+Ожидает XLSX файл, на активной вкладке которого первая строка - заголовки колонок, среди них есть колонки со всеми полями модели ТС (то есть "brand", "model", "color", "registration_number", "year_of_manufacture", "vin", "vehicle_registration_number", "vehicle_registration_date"). 
 Подойдёт файл, аналогичный полученному в методе `GET /api/vehicle/?download=xlsx`
 
 Возвращает созданные записи о ТС, а также ошибочные данные с указанием причин ошибки.
+
+Пример:
+```shell
+curl \
+  -X POST \
+  -u USER:PASSWORD \
+  -F 'file=@/home/oleg/vehicles_list.xlsx' \
+  "http://127.0.0.1:8000/api/vehicle/from_xlsx/" 
+```
 
 - [x] `PATCH /api/vehicle/1/`
   - изменение записи о ТС
