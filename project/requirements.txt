@@ -9,6 +9,7 @@ drf-yasg
 python-dotenv
 black
 openpyxl
+xlsxwriter
 factory_boy
 faker_vehicle
 flake8

@@ -1,6 +1,7 @@
 import csv
 from tempfile import NamedTemporaryFile
 import datetime
+from io import BytesIO
 
 from openpyxl import Workbook, load_workbook
 from django.http import HttpResponse
@@ -46,34 +47,25 @@ class VehicleViewSet(viewsets.ModelViewSet):
             headers={
                 "Content-Type": "text/csv",
                 "Content-Disposition": 'attachment; filename="vehicles_list.csv"',
-            }
+            },
         )
 
     def download_xlsx(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())  # as in super().list()
+        df = pd.DataFrame(queryset.values())
+        buffer = BytesIO()
+        writer = pd.ExcelWriter(buffer, engine="xlsxwriter")
+        df.to_excel(writer, sheet_name="Vehicles", index=False)
+        writer.save()
+        buffer.seek(0)
 
-        wb = Workbook()
-        ws = wb.active
-        ws.title = "Vehicles"
-
-        fieldnames = [field.name for field in Vehicle._meta.get_fields()]
-        ws.append(fieldnames)
-        for row in queryset.values():
-            ws.append(list(row.values()))
-
-        with NamedTemporaryFile() as tmp:
-            wb.save(tmp.name)
-            tmp.seek(0)
-            stream = tmp.read()
-
-        response = HttpResponse(
-            stream,
+        return HttpResponse(
+            buffer.read(),
             headers={
                 "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 "Content-Disposition": 'attachment; filename="vehicles_list.xlsx"',
             },
         )
-        return response
 
     @action(detail=False, methods=["post"])
     def from_csv(self, request):
