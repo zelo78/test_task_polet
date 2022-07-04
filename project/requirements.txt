@@ -12,3 +12,4 @@ openpyxl
 factory_boy
 faker_vehicle
 flake8
+pandas

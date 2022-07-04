@@ -366,6 +366,7 @@ curl \
 - [python-dotenv](https://pypi.org/project/python-dotenv/) v. 0.20.0 - Reads key-value pairs from a `.env` file and can set them as environment variables
 - [black](https://black.readthedocs.io/en/stable/) v. 22.3.0 - The uncompromising code formatter
 - [openpyxl](https://openpyxl.readthedocs.io/en/stable/) v. 3.0.10 - A Python library to read/write Excel 2010 xlsx/xlsm files
+- [Pandas](https://pandas.pydata.org/docs/index.html) v 1.4.3 - Pandas is an open source, BSD-licensed library providing high-performance, easy-to-use data structures and data analysis tools for the Python programming language.
 - [factory_boy](https://factoryboy.readthedocs.io/en/stable/index.html) v. 3.2.1 - factory_boy is a fixtures replacement based on thoughtbot’s factory_bot.
 - [faker_vehicle](https://pypi.org/project/faker-vehicle/) v. 0.2.0 - faker_vehicle provides vehicle and machinery related fake data for testing purposes
 - [flake8](https://flake8.pycqa.org/en/latest/) v. 4.0.1 - Tool For Style Guide Enforcement
