@@ -9,7 +9,7 @@ from rest_framework import permissions
 from rest_framework import exceptions
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.parsers import MultiPartParser, FileUploadParser
+from rest_framework.parsers import MultiPartParser, FileUploadParser, JSONParser
 from rest_framework.decorators import action
 
 from main.serializers import VehicleSerializer
@@ -26,7 +26,7 @@ class VehicleViewSet(viewsets.ModelViewSet):
     serializer_class = VehicleSerializer
     permission_classes = [permissions.IsAuthenticated]
     filterset_class = VehicleFilter
-    parser_classes = [MultiPartParser, FileUploadParser]
+    parser_classes = [JSONParser, MultiPartParser, FileUploadParser]
 
     def list(self, request, *args, **kwargs):
         download_query = request.query_params.get("download")
