@@ -11,6 +11,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FileUploadParser, JSONParser
 from rest_framework.decorators import action
+import pandas as pd
 
 from main.serializers import VehicleSerializer
 from main.models import Vehicle
@@ -39,20 +40,14 @@ class VehicleViewSet(viewsets.ModelViewSet):
 
     def download_csv(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())  # as in super().list()
-
-        response = HttpResponse(
+        df = pd.DataFrame(queryset.values())
+        return HttpResponse(
+            df.to_csv(index=False),
             headers={
                 "Content-Type": "text/csv",
                 "Content-Disposition": 'attachment; filename="vehicles_list.csv"',
             }
         )
-        fieldnames = [field.name for field in Vehicle._meta.get_fields()]
-        writer = csv.DictWriter(response, fieldnames=fieldnames)
-        writer.writeheader()
-        for row in queryset.values():
-            writer.writerow(row)
-
-        return response
 
     def download_xlsx(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())  # as in super().list()
